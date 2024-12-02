@@ -1,6 +1,6 @@
 import os
 
-import requests
+import aiohttp
 
 
 class WeatherClient:
@@ -14,38 +14,39 @@ class WeatherClient:
         else:
             self._api_key = api_key
 
-    def get_weather_by_city(self, city_name):
+    async def get_weather_by_city(self, city_name):
         params = {
             'q': city_name,
             'appid': self._api_key,
             'units': self._units
         }
-        return self._fetch_weather(params)
+        return await self._fetch_weather(params)
 
-    def get_weather_by_coordinates(self, lat, lon):
-
+    async def get_weather_by_coordinates(self, lat, lon):
         params = {
             'lat': lat,
             'lon': lon,
             'units': self._units,
-            'appid': self._api_key,
+            'appid': self._api_key
         }
-        return self._fetch_weather(params)
+        return await self._fetch_weather(params)
 
-    def _fetch_weather(self, params):
-        try:
-            response = requests.get(url=self.BASE_URL, params=params)
-            response.raise_for_status()
-            payload_data = response.json()
+    async def _fetch_weather(self, params):
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(url=self.BASE_URL, params=params) as response:
+                    response.raise_for_status()
+                    payload_data = await response.json()
 
-            return {
-                "city": payload_data["name"],
-                "temperature": payload_data["main"]["temp"],
-                "description": payload_data["weather"][0]["description"],
-                "humidity": payload_data["main"]["humidity"],
-                "wind_speed": payload_data["wind"]["speed"]
-            }
+                    return {
+                        "city": payload_data["name"],
+                        "temperature": payload_data["main"]["temp"],
+                        "description": payload_data["weather"][0]["description"],
+                        "humidity": payload_data["main"]["humidity"],
+                        "wind_speed": payload_data["wind"]["speed"]
+                    }
 
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching weather data: {e}")
-            return None
+            except aiohttp.ClientResponseError as error:
+                raise Exception(f"Failed to fetch weather data; status: {error.status}, message: {error.message}")
+            except aiohttp.ClientError as e:
+                raise Exception(f"Failed to fetch weather data: {e}")
