@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class AbstractDbClient(ABC):
     @abstractmethod
-    def init_connection(self):
+    def verify_connect(self):
         pass
 
     @abstractmethod

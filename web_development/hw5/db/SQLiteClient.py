@@ -1,20 +1,17 @@
 import sqlite3
 import logging
 
-from AbstractDbClient import AbstractDbClient
-from ..decorator.singletone import singleton
+from .AbstractDbClient import AbstractDbClient
 
-
-@singleton
 class SQLiteClient(AbstractDbClient):
     def __init__(self, db_name=":memory:") -> None:
         self.db_name = db_name
         self._connection = None
         self.log = logging.getLogger(__name__)
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(className)s %(message)s')
 
-    def init_connection(self):
-        self._connect()
+    def verify_connect(self):
+        if not self._connection:
+            self._connect()
 
     def close_connection(self):
         if self._connection:
@@ -32,23 +29,24 @@ class SQLiteClient(AbstractDbClient):
         return self._connect().cursor()
 
     def _execute(self, query: str, params=()):
+        self.log.info(f"Executing query: {query} with params: {params}")
         cursor = self.cursor
         cursor.execute(query, params)
-        if 'INSERT' or 'UPDATE' or 'DELETE' in query:
+        if any(keyword in query.upper() for keyword in ['INSERT', 'UPDATE', 'DELETE']):
             self._connection.commit()
         return cursor
 
-    def fetch_all(self, query: str):
-        cursor = self._execute(query)
+    def fetch_all(self, query: str, params=()):
+        cursor = self._execute(query, params)
         return cursor.fetchall()
 
-    def fetch_one(self, query: str):
-        cursor = self._execute(query)
+    def fetch_one(self, query: str, params=()):
+        cursor = self._execute(query, params)
         return cursor.fetchone()
 
     def create_table(self, table_name: str, schema: dict):
         columns = ', '.join(f'{col} {d_type}' for col, d_type in schema.items())
-        query = f'CREATE TABLE {table_name} ({columns})'
+        query = f'CREATE TABLE IF NOT EXISTS {table_name} ({columns})'
         self._execute(query)
 
     def insert(self, table_name: str, data: dict):
