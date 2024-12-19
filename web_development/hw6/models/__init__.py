@@ -3,6 +3,6 @@ __all__ = [
     'SiteAccountData'
 ]
 
-from User import User
-from SiteAccountData import SiteAccountData
-from BaseModel import BaseModel
+from .User import User
+from .SiteAccountData import SiteAccountData
+from .BaseModel import BaseModel
