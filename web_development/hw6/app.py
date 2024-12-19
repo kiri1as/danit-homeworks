@@ -1,5 +1,6 @@
-from db_utils import migration_upgrade
+from db_utils import run_migration
+from controllers import menu_loop
 
 if __name__ == "__main__":
-    migration_upgrade()
-    
+    run_migration()
+    menu_loop()
