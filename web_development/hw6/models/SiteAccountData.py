@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy import ForeignKey, String, Integer, UniqueConstraint, Sequence
 from sqlalchemy import Enum as SQLEnum
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 
 from .BaseModel import BaseModel
 from .types import LoginType
@@ -10,7 +10,7 @@ from .types import LoginType
 
 class SiteAccountData(BaseModel):
     __tablename__ = 'site_acct_data'
-    record_id: Mapped[int] = mapped_column(Integer, Sequence('user_seq', start=1, increment=1), name='rec_id', primary_key=True)
+    record_id: Mapped[int] = mapped_column(Integer, Sequence('site_acct_data_seq', start=1, increment=1), name='rec_id', primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.user_id'), name='usr_id', nullable=False)
     site_url: Mapped[str] = mapped_column(String(100), name='site_url', nullable=False)
     login_type: Mapped[LoginType] = mapped_column(SQLEnum(LoginType), name='account_type', nullable=False)

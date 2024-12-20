@@ -1,8 +1,8 @@
-from ._constants import INVALID_INPUT_MESSAGE
-from .accounts_countroller import add_account_data, print_accounts_by_user
-from .user_controller import user_login_loop as login, user_registration_loop as register
 from web_development.hw6.db_utils import close_all_sessions
-from web_development.hw6.models.types import LoginType
+from ._constants import INVALID_INPUT_MESSAGE
+from .accounts_countroller import select_account_action
+from .user_controller import user_login_loop as user_login, user_registration_loop as register_loop
+from web_development.hw5.controllers.user_controller import option_input
 
 
 def main_menu_loop():
@@ -16,9 +16,9 @@ def main_menu_loop():
 
         match selected_opt:
             case 1:
-                login()
+                login_loop()
             case 2:
-                register()
+                register_loop()
             case 3:
                 close_all_sessions()
                 print('BYE!')
@@ -27,66 +27,9 @@ def main_menu_loop():
                 print(f'\n--- ERROR ----\n{INVALID_INPUT_MESSAGE.upper()}: No such option!')
 
 
-def select_account_action(user_id):
-    options = [
-        (1, 'ADD NEW ACCOUNT'),
-        (2, 'VIEW ACCOUNTS'),
-        (3, 'LOGOUT'),
-    ]
+def login_loop():
+    user_id = user_login()
 
-    while True:
-        print('\n--- PLEASE SELECT OPTION ---')
+    if user_id != -1:
+        select_account_action(user_id)
 
-        for o in options:
-            print(f'{o[0]}: {o[1]}')
-
-        selected_opt = option_input()
-
-        match selected_opt:
-            case 1:
-                add_account_data(user_id)
-            case 2:
-                print_accounts_by_user(user_id)
-            case 3:
-                print('BYE!')
-                main_menu_loop()
-            case _:
-                print(f'\n--- ERROR ----\n{INVALID_INPUT_MESSAGE.upper()}: No such option!')
-
-
-def select_account_type_loop() -> LoginType:
-    options = [
-        (1, LoginType.apple.value),
-        (2, LoginType.google.value),
-        (3, LoginType.facebook.value),
-        (4, LoginType.email.value),
-    ]
-
-    while True:
-        print('\n--- PLEASE SELECT LOGIN TYPE ---')
-
-        for o in options:
-            print(f'{o[0]}: {o[1]}')
-
-        selected_opt = option_input()
-
-        match selected_opt:
-            case 1:
-                return LoginType.apple
-            case 2:
-                return LoginType.google
-            case 3:
-                return LoginType.facebook
-            case 4:
-                return LoginType.email
-            case _:
-                print(f'\n--- ERROR ----\n{INVALID_INPUT_MESSAGE.upper()}: No such option!')
-
-
-def option_input() -> int:
-    while True:
-        try:
-            option = int(input('Enter an option: '))
-            return option
-        except ValueError:
-            print('Invalid option. Try again.')

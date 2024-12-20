@@ -71,21 +71,21 @@ def login_loop() -> bool:
     user_data = dict(zip(user_row.keys(), user_row))
     pwd_stored = user_data.get('password')
     pwd_input = password_input()
-    pwd_math = pwd_input == pwd_stored
+    pwd_match = pwd_input == pwd_stored
 
-    if not pwd_math:
+    if not pwd_match:
         invalid_pwd_input_cnt = 2
 
         while invalid_pwd_input_cnt > 0:
             print(f'Sorry, try again...\nYou have {invalid_pwd_input_cnt} attempts left')
             invalid_pwd_input_cnt -= 1
             pwd_input = password_input()
-            pwd_math = pwd_input == pwd_stored
+            pwd_match = pwd_input == pwd_stored
 
-            if pwd_math:
+            if pwd_match:
                 break
 
-    if pwd_math:
+    if pwd_match:
         show_welcome_logo()
         print(f'\n Welcome, {user_data.get('username')}!!!  Your user_id is {user_data.get("user_id")}\n')
         print('--- USER LOGIN COMPLETED ---')
