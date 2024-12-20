@@ -4,10 +4,11 @@ from sqlalchemy import ForeignKey, String, Integer, UniqueConstraint, Sequence
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from .BaseModel import BaseModel
 from .types import LoginType
 
 
-class SiteAccountData(DeclarativeBase):
+class SiteAccountData(BaseModel):
     __tablename__ = 'site_acct_data'
     record_id: Mapped[int] = mapped_column(Integer, Sequence('user_seq', start=1, increment=1), name='rec_id', primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.user_id'), name='usr_id', nullable=False)
@@ -19,3 +20,13 @@ class SiteAccountData(DeclarativeBase):
     __table_args__ = (
         UniqueConstraint('usr_id', 'site_url', 'account_type', name='site_acct_data_unq_idx'),
     )
+
+    def to_dict(self) -> dict:
+        return {
+            'record_id': self.record_id,
+            'user_id': self.user_id,
+            'site_url': self.site_url,
+            'login_type': self.login_type,
+            'login_user_name': self.login_user_name,
+            'login_password': self.login_password,
+        }

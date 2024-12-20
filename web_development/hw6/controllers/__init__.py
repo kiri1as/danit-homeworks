@@ -1,1 +1,1 @@
-from .menu_controller import menu_loop
+from .menu_controller import main_menu_loop
