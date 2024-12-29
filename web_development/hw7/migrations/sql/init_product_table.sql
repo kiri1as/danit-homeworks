@@ -6,7 +6,7 @@ create table if not exists product_prices
 (
     record_id bigint primary key default nextval('product_price_rec_seq'),
     record_type record_creation_type not null,
-    created_at date not null default now(),
+    created_at timestamp default now() not null,
     product_id bigint not null,
     product_name text not null,
     product_status varchar(80),
